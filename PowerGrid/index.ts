@@ -2,21 +2,21 @@ import { IInputs, IOutputs } from "./generated/ManifestTypes";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import {
-  ColDef,
-  ColGroupDef,
-  GridApi,
-  GridOptions,
-  RowContainerCtrl,
-  createGrid,
+    ColDef,
+    ColGroupDef,
+    GridApi,
+    GridOptions,
+    RowContainerCtrl,
+    createGrid,
 } from "ag-grid-community";
 
+let selectedRows:any;
 export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 
     /**
      * Empty constructor.
      */
-    constructor()
-    {
+    constructor() {
 
     }
 
@@ -28,55 +28,62 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      * @param state A piece of data that persists in one session for a single user. Can be set at any point in a controls life cycle by calling 'setControlState' in the Mode interface.
      * @param container If a control is marked control-type='standard', it will receive an empty div element within which it can render its content.
      */
-    public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container:HTMLDivElement): void
-    {
-         let _cont = container;
-         _cont.style.height = `${context.mode.allocatedHeight - 0}px`;
-         _cont.style.width = `${context.mode.allocatedWidth - 0}px`;
+
+    public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container: HTMLDivElement): void {
+        let _cont = container;
+        _cont.style.height = `${context.mode.allocatedHeight - 0}px`;
+        _cont.style.width = `${context.mode.allocatedWidth - 0}px`;
+        _cont.classList.add("ag-theme-quartz");
         // let agGrid = document.createElement("div");
         // agGrid.id = "myGrid";
         // agGrid.style.height = context.
         // agGrid.style.width = _cont.style.width;
         // _cont.appendChild(agGrid);
 
-        
+
         interface IRow {
             make: string;
             model: string;
             price: number;
             electric: boolean;
-          }
-          
-          // Grid API: Access to Grid API methods
-          let gridApi: GridApi;
-          
-          // Grid Options: Contains all of the grid configurations
-          const gridOptions: GridOptions<IRow> = {
-            // Data to be displayed
-            rowData: [
-              { make: "Tesla", model: "Model Y", price: 64950, electric: true },
-              { make: "Ford", model: "F-Series", price: 33850, electric: false },
-              { make: "Toyota", model: "Corolla", price: 29600, electric: false },
-              { make: "Mercedes", model: "EQA", price: 48890, electric: true },
-              { make: "Fiat", model: "500", price: 15774, electric: false },
-              { make: "Nissan", model: "Juke", price: 20675, electric: false },
-            ],
-            // Columns to be displayed (Should match rowData properties)
+        }
+
+        // Grid API: Access to Grid API methods
+        let gridApi: any;
+
+        const gridOptions: any = {
             columnDefs: [
-              { field: "make" },
-              { field: "model" },
-              { field: "price" },
-              { field: "electric" },
+                { field: "athlete", minWidth: 150 },
+                { field: "age", maxWidth: 90 },
+                { field: "country", minWidth: 150 },
+                { field: "year", maxWidth: 90 },
+                { field: "date", minWidth: 150 },
+                { field: "sport", minWidth: 150 },
+                { field: "gold" },
+                { field: "silver" },
+                { field: "bronze" },
+                { field: "total" },
             ],
             defaultColDef: {
-              flex: 1,
+                flex: 1,
+                minWidth: 100,
             },
-          };
-          // Create Grid: Create new grid within the #myGrid div, using the Grid Options object
-          gridApi = createGrid(
-            _cont,//document.querySelector<HTMLElement>("#myGrid")!,
-            gridOptions,
-          );
+            rowSelection: "single",
+            onSelectionChanged: onSelectionChanged,
+        };
+
+        function onSelectionChanged() {
+            selectedRows = gridApi!.getSelectedRows();
+            console.log(selectedRows)
+            notifyOutputChanged();
+        }
+
+        // setup the grid after the page has finished loading
+        gridApi = createGrid(_cont, gridOptions);
+
+        fetch("https://www.ag-grid.com/example-assets/olympic-winners.json")
+            .then((response) => response.json())
+            .then((data: any) => gridApi!.setGridOption("rowData", data));
     }
 
 
@@ -84,26 +91,26 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      * Called when any value in the property bag has changed. This includes field values, data-sets, global values such as container height and width, offline status, control metadata values such as label, visible, etc.
      * @param context The entire property bag available to control via Context Object; It contains values as set up by the customizer mapped to names defined in the manifest, as well as utility functions
      */
-    public updateView(context: ComponentFramework.Context<IInputs>): void
-    {
+    public updateView(context: ComponentFramework.Context<IInputs>): void {
         // Add code to update control view
+        
     }
 
     /**
      * It is called by the framework prior to a control receiving new data.
      * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as "bound" or "output"
      */
-    public getOutputs(): IOutputs
-    {
-        return {};
+    public getOutputs(): IOutputs {
+        return {
+            SelectedItem: selectedRows
+        };
     }
 
     /**
      * Called when the control is to be removed from the DOM tree. Controls should use this call for cleanup.
      * i.e. cancelling any pending remote calls, removing listeners, etc.
      */
-    public destroy(): void
-    {
+    public destroy(): void {
         // Add code to cleanup control if necessary
     }
 }
