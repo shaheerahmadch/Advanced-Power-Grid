@@ -68,12 +68,12 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
 
         const gridOptions: any = {
             columnDefs: [
-                { field: "athlete", minWidth: 150, rowGroup: true, headerCheckboxSelection: true, checkboxSelection: true },
-                { field: "age", maxWidth: 90, rowGroup: true },
-                { field: "country", minWidth: 150, rowGroup: true },
-                { field: "year", maxWidth: 90, rowGroup: true },
-                { field: "date", minWidth: 150, rowGroup: true },
-                { field: "sport", minWidth: 150, rowGroup: true },
+               { field: "athlete", minWidth: 150,headerCheckboxSelection: true, checkboxSelection: true },
+                { field: "age", maxWidth: 90, },
+                { field: "country", minWidth: 150,  },
+                { field: "year", maxWidth: 90,},
+                { field: "date", minWidth: 150,  },
+                { field: "sport", minWidth: 150, },
                 { field: "gold" },
                 { field: "silver" },
                 { field: "bronze" },
@@ -85,6 +85,8 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
             },
             rowSelection: "multiple",
             onSelectionChanged: onSelectionChanged,
+
+            sideBar: true,
             // sideBar: {
             //     toolPanels: ['columns', 'filters']
             // },
@@ -95,7 +97,16 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
             groupSelectsChildren: true,
             pivotPanelShow: "always",
             rowGroupPanelShow: 'always',
-            checkboxSelection: true
+            checkboxSelection: true,
+            statusBar: {
+                statusPanels: [
+                    { statusPanel: 'agTotalAndFilteredRowCountComponent', align: 'left' },
+                    { statusPanel: 'agTotalRowCountComponent', align: 'center' },
+                    { statusPanel: 'agFilteredRowCountComponent' },
+                    { statusPanel: 'agSelectedRowCountComponent' },
+                    { statusPanel: 'agAggregationComponent' },
+                ]
+            },
         };
 
 
