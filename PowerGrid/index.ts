@@ -10,7 +10,8 @@ import {
     createGrid,
 } from "ag-grid-community";
 
-let selectedRows:any;
+let selectedRows: any;
+let itemsCount: any;
 export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 
     /**
@@ -34,13 +35,15 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
         _cont.style.height = `${context.mode.allocatedHeight - 0}px`;
         _cont.style.width = `${context.mode.allocatedWidth - 0}px`;
         _cont.classList.add("ag-theme-quartz");
-        // let agGrid = document.createElement("div");
-        // agGrid.id = "myGrid";
-        // agGrid.style.height = context.
-        // agGrid.style.width = _cont.style.width;
-        // _cont.appendChild(agGrid);
-
-
+        let _rows;
+        if (context.parameters.Items.raw) {
+            _rows = JSON.parse(context.parameters.Items.raw);
+        }
+        else {
+            _rows = [];
+        }
+        itemsCount = _rows.length;
+        
         interface IRow {
             make: string;
             model: string;
@@ -50,7 +53,7 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
 
         // Grid API: Access to Grid API methods
         let gridApi: any;
-
+        gridApi!.setGridOption("rowData", _rows)
         const gridOptions: any = {
             columnDefs: [
                 { field: "athlete", minWidth: 150 },
@@ -81,9 +84,9 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
         // setup the grid after the page has finished loading
         gridApi = createGrid(_cont, gridOptions);
 
-        fetch("https://www.ag-grid.com/example-assets/olympic-winners.json")
-            .then((response) => response.json())
-            .then((data: any) => gridApi!.setGridOption("rowData", data));
+        // fetch("https://www.ag-grid.com/example-assets/olympic-winners.json")
+        //     .then((response) => response.json())
+        //     .then((data: any) => gridApi!.setGridOption("rowData", data));
     }
 
 
@@ -93,7 +96,7 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void {
         // Add code to update control view
-        
+
     }
 
     /**
@@ -102,7 +105,8 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      */
     public getOutputs(): IOutputs {
         return {
-            SelectedItem: JSON.stringify(selectedRows)
+            SelectedItem: JSON.stringify(selectedRows),
+            ItemsCount: itemsCount
         };
     }
 
