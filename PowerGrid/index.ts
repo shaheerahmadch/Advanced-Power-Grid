@@ -110,7 +110,7 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
 
         function onSelectionChanged() {
             selectedRows = gridApi!.getSelectedRows();
-            console.log("selected",selectedRows)
+            console.log("selected", selectedRows)
             notifyOutputChanged();
         }
     }
@@ -122,7 +122,7 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void {
         // Add code to update control view
-        console.log("update",context.updatedProperties)
+        console.log("update", context.updatedProperties)
         try {
             if (context.parameters.Items.raw) {
                 _rows = JSON.parse(context.parameters.Items.raw);
@@ -134,7 +134,12 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
             _rows = [];
             console.log(e)
         }
-       // gridApi!.setGridOption("rowData", _rows)
+        console.log("selectedItems", selectedRows.length)
+        if (selectedRows.length == 0) {
+            gridApi!.setGridOption("rowData", _rows)
+        } else {
+            //selectedRows = []
+        }
     }
 
     /**
