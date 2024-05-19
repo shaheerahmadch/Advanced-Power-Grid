@@ -102,7 +102,7 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      */
     public getOutputs(): IOutputs {
         return {
-            SelectedItem: selectedRows
+            SelectedItem: JSON.stringify(selectedRows)
         };
     }
 
