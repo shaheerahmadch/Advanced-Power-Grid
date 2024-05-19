@@ -10,6 +10,7 @@ import {
     RowContainerCtrl,
     createGrid,
 } from "ag-grid-community";
+import { compare } from "semver";
 
 let selectedRows: any;
 let _rows: [];
@@ -102,14 +103,14 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
         // setup the grid after the page has finished loading
         gridApi = createGrid(_cont, gridOptions);
 
-        // gridApi!.setGridOption("rowData", _rows)
-        fetch("https://www.ag-grid.com/example-assets/olympic-winners.json")
-            .then((response) => response.json())
-            .then((data: any) => gridApi!.setGridOption("rowData", data));
+        gridApi!.setGridOption("rowData", _rows)
+        // fetch("https://www.ag-grid.com/example-assets/olympic-winners.json")
+        //     .then((response) => response.json())
+        //     .then((data: any) => gridApi!.setGridOption("rowData", data));
 
         function onSelectionChanged() {
             selectedRows = gridApi!.getSelectedRows();
-            console.log(selectedRows)
+            console.log("selected",selectedRows)
             notifyOutputChanged();
         }
     }
@@ -121,7 +122,7 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void {
         // Add code to update control view
-        console.log("update");
+        console.log("update",context.updatedProperties)
         try {
             if (context.parameters.Items.raw) {
                 _rows = JSON.parse(context.parameters.Items.raw);
@@ -133,7 +134,7 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
             _rows = [];
             console.log(e)
         }
-        gridApi!.setGridOption("rowData", _rows)
+       // gridApi!.setGridOption("rowData", _rows)
     }
 
     /**
