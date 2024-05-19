@@ -1,6 +1,7 @@
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
+import "./style.css";
 import {
     ColDef,
     ColGroupDef,
@@ -11,7 +12,8 @@ import {
 } from "ag-grid-community";
 
 let selectedRows: any;
-let _rows:[];
+let _rows: [];
+let gridApi: any;
 export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 
     /**
@@ -31,15 +33,21 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      */
 
     public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container: HTMLDivElement): void {
+        console.log("innit");
         let _cont = container;
         _cont.style.height = `${context.mode.allocatedHeight - 0}px`;
         _cont.style.width = `${context.mode.allocatedWidth - 0}px`;
         _cont.classList.add("ag-theme-quartz");
-        if (context.parameters.Items.raw) {
-            _rows = JSON.parse(context.parameters.Items.raw);
-        }
-        else {
+        try {
+            if (context.parameters.Items.raw) {
+                _rows = JSON.parse(context.parameters.Items.raw);
+            }
+            else {
+                _rows = [];
+            }
+        } catch (e) {
             _rows = [];
+            console.log(e)
         }
         // let agGrid = document.createElement("div");
         // agGrid.id = "myGrid";
@@ -56,16 +64,15 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
         }
 
         // Grid API: Access to Grid API methods
-        let gridApi: any;
 
         const gridOptions: any = {
             columnDefs: [
-                { field: "athlete", minWidth: 150 },
-                { field: "age", maxWidth: 90 },
-                { field: "country", minWidth: 150 },
-                { field: "year", maxWidth: 90 },
-                { field: "date", minWidth: 150 },
-                { field: "sport", minWidth: 150 },
+                { field: "athlete", minWidth: 150, rowGroup: true, headerCheckboxSelection: true, checkboxSelection: true },
+                { field: "age", maxWidth: 90, rowGroup: true },
+                { field: "country", minWidth: 150, rowGroup: true },
+                { field: "year", maxWidth: 90, rowGroup: true },
+                { field: "date", minWidth: 150, rowGroup: true },
+                { field: "sport", minWidth: 150, rowGroup: true },
                 { field: "gold" },
                 { field: "silver" },
                 { field: "bronze" },
@@ -75,31 +82,36 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
                 flex: 1,
                 minWidth: 100,
             },
-            rowSelection: "single",
+            rowSelection: "multiple",
             onSelectionChanged: onSelectionChanged,
-            sideBar: {
-                toolPanels: ['columns', 'filters']
-            },
+            // sideBar: {
+            //     toolPanels: ['columns', 'filters']
+            // },
             pagination: true,
             paginationPageSize: 10,
             paginationPageSizeSelector: [10, 25, 50, 100],
-            suppressRowClickSelection: true,
+            // suppressRowClickSelection: true,
             groupSelectsChildren: true,
             pivotPanelShow: "always",
+            rowGroupPanelShow: 'always',
+            checkboxSelection: true
         };
+
+
+
+        // setup the grid after the page has finished loading
+        gridApi = createGrid(_cont, gridOptions);
+
+        // gridApi!.setGridOption("rowData", _rows)
+        fetch("https://www.ag-grid.com/example-assets/olympic-winners.json")
+            .then((response) => response.json())
+            .then((data: any) => gridApi!.setGridOption("rowData", data));
 
         function onSelectionChanged() {
             selectedRows = gridApi!.getSelectedRows();
             console.log(selectedRows)
             notifyOutputChanged();
         }
-
-        // setup the grid after the page has finished loading
-        gridApi = createGrid(_cont, gridOptions);
-        gridApi!.setGridOption("rowData", _rows)
-        // fetch("https://www.ag-grid.com/example-assets/olympic-winners.json")
-        //     .then((response) => response.json())
-        //     .then((data: any) => gridApi!.setGridOption("rowData", data));
     }
 
 
@@ -109,7 +121,19 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void {
         // Add code to update control view
-
+        console.log("update");
+        try {
+            if (context.parameters.Items.raw) {
+                _rows = JSON.parse(context.parameters.Items.raw);
+            }
+            else {
+                _rows = [];
+            }
+        } catch (e) {
+            _rows = [];
+            console.log(e)
+        }
+        gridApi!.setGridOption("rowData", _rows)
     }
 
     /**
@@ -120,7 +144,7 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
         return {
             SelectedItems: JSON.stringify(selectedRows),
             SelectedItemsCount: selectedRows.length,
-            ItemsCount: _rows.length+""
+            ItemsCount: _rows.length + ""
         };
     }
 
