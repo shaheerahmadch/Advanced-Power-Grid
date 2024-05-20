@@ -57,23 +57,23 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
         // agGrid.style.height = context.
         // agGrid.style.width = _cont.style.width;
         // _cont.appendChild(agGrid);
-        
+
         if (_rows.length > 0) {
             const firstRow = _rows[0];
-            columnDefs = Object.keys(firstRow).map((key,index) => {
-                const colDef: ColDef = { field: key ,minWidth:150 };
+            columnDefs = Object.keys(firstRow).map((key, index) => {
+                const colDef: ColDef = { field: key, minWidth: 150 };
                 if (index === 0) {
                     colDef.headerCheckboxSelection = true;
                     colDef.checkboxSelection = true;
                 }
                 return colDef;
             });
-            console.log("columnDefs",columnDefs)
+            console.log("columnDefs", columnDefs)
         } else {
             console.error("rowData is empty. Cannot generate column definitions.");
             // Optionally, provide default column definitions here
         }
-        
+
 
         interface IRow {
             make: string;
@@ -105,12 +105,14 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
             onSelectionChanged: onSelectionChanged,
 
             sideBar: true,
+
             // sideBar: {
             //     toolPanels: ['columns', 'filters']
             // },
+
             pagination: true,
             paginationPageSize: 10,
-            paginationPageSizeSelector: [10, 25, 50, 100],
+            paginationPageSizeSelector: [10, 25, 50, , 75, 100],
             // suppressRowClickSelection: true,
             groupSelectsChildren: true,
             pivotPanelShow: "always",
@@ -151,8 +153,8 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void {
         // Add code to update control view
-        console.log("update", _.isEqual( JSON.parse(context.parameters.Items.raw?context.parameters.Items.raw:""), _rows))
-        if( !_.isEqual( JSON.parse(context.parameters.Items.raw?context.parameters.Items.raw:""), _rows)){
+        console.log("update", _.isEqual(JSON.parse(context.parameters.Items.raw ? context.parameters.Items.raw : ""), _rows))
+        if (!_.isEqual(JSON.parse(context.parameters.Items.raw ? context.parameters.Items.raw : ""), _rows)) {
             try {
                 if (context.parameters.Items.raw) {
                     _rows = JSON.parse(context.parameters.Items.raw);
@@ -165,17 +167,18 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
                 console.log(e)
             }
             gridApi!.setGridOption("rowData", _rows)
+            selectedRows = [];
             if (_rows.length > 0) {
                 const firstRow = _rows[0];
-                columnDefs = Object.keys(firstRow).map((key,index) => {
-                    const colDef: ColDef = { field: key ,minWidth:150 };
+                columnDefs = Object.keys(firstRow).map((key, index) => {
+                    const colDef: ColDef = { field: key, minWidth: 150 };
                     if (index === 0) {
                         colDef.headerCheckboxSelection = true;
                         colDef.checkboxSelection = true;
                     }
                     return colDef;
                 });
-                console.log("columnDefs",columnDefs)
+                console.log("columnDefs", columnDefs)
                 gridApi!.setGridOption("columnDefs", columnDefs)
             } else {
                 console.error("rowData is empty. Cannot generate column definitions.");
