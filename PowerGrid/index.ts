@@ -11,10 +11,12 @@ import {
     createGrid,
 } from "ag-grid-community";
 import { compare } from "semver";
+import * as _ from "lodash";
 
 let selectedRows: any;
-let _rows: [];
+let _rows: any;
 let gridApi: any;
+let columnDefs: ColDef[] = [];
 export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 
     /**
@@ -55,7 +57,23 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
         // agGrid.style.height = context.
         // agGrid.style.width = _cont.style.width;
         // _cont.appendChild(agGrid);
-
+        
+        if (_rows.length > 0) {
+            const firstRow = _rows[0];
+            columnDefs = Object.keys(firstRow).map((key,index) => {
+                const colDef: ColDef = { field: key ,minWidth:150 };
+                if (index === 0) {
+                    colDef.headerCheckboxSelection = true;
+                    colDef.checkboxSelection = true;
+                }
+                return colDef;
+            });
+            console.log("columnDefs",columnDefs)
+        } else {
+            console.error("rowData is empty. Cannot generate column definitions.");
+            // Optionally, provide default column definitions here
+        }
+        
 
         interface IRow {
             make: string;
@@ -67,18 +85,18 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
         // Grid API: Access to Grid API methods
 
         const gridOptions: any = {
-            columnDefs: [
-               { field: "athlete", minWidth: 150,headerCheckboxSelection: true, checkboxSelection: true },
-                { field: "age", maxWidth: 90, },
-                { field: "country", minWidth: 150,  },
-                { field: "year", maxWidth: 90,},
-                { field: "date", minWidth: 150,  },
-                { field: "sport", minWidth: 150, },
-                { field: "gold" },
-                { field: "silver" },
-                { field: "bronze" },
-                { field: "total" },
-            ],
+            columnDefs: columnDefs,
+            //    { field: "athlete", minWidth: 150,headerCheckboxSelection: true, checkboxSelection: true },
+            //     { field: "age", maxWidth: 90, },
+            //     { field: "country", minWidth: 150,  },
+            //     { field: "year", maxWidth: 90,},
+            //     { field: "date", minWidth: 150,  },
+            //     { field: "sport", minWidth: 150, },
+            //     { field: "gold" },
+            //     { field: "silver" },
+            //     { field: "bronze" },
+            //     { field: "total" },
+            // ],
             defaultColDef: {
                 flex: 1,
                 minWidth: 100,
@@ -133,23 +151,36 @@ export class PowerGrid implements ComponentFramework.StandardControl<IInputs, IO
      */
     public updateView(context: ComponentFramework.Context<IInputs>): void {
         // Add code to update control view
-        console.log("update", context.updatedProperties)
-        try {
-            if (context.parameters.Items.raw) {
-                _rows = JSON.parse(context.parameters.Items.raw);
-            }
-            else {
+        console.log("update", _.isEqual( JSON.parse(context.parameters.Items.raw?context.parameters.Items.raw:""), _rows))
+        if( !_.isEqual( JSON.parse(context.parameters.Items.raw?context.parameters.Items.raw:""), _rows)){
+            try {
+                if (context.parameters.Items.raw) {
+                    _rows = JSON.parse(context.parameters.Items.raw);
+                }
+                else {
+                    _rows = [];
+                }
+            } catch (e) {
                 _rows = [];
+                console.log(e)
             }
-        } catch (e) {
-            _rows = [];
-            console.log(e)
-        }
-        console.log("selectedItems", selectedRows.length)
-        if (selectedRows.length == 0) {
             gridApi!.setGridOption("rowData", _rows)
-        } else {
-            //selectedRows = []
+            if (_rows.length > 0) {
+                const firstRow = _rows[0];
+                columnDefs = Object.keys(firstRow).map((key,index) => {
+                    const colDef: ColDef = { field: key ,minWidth:150 };
+                    if (index === 0) {
+                        colDef.headerCheckboxSelection = true;
+                        colDef.checkboxSelection = true;
+                    }
+                    return colDef;
+                });
+                console.log("columnDefs",columnDefs)
+                gridApi!.setGridOption("columnDefs", columnDefs)
+            } else {
+                console.error("rowData is empty. Cannot generate column definitions.");
+                // Optionally, provide default column definitions here
+            }
         }
     }
 
