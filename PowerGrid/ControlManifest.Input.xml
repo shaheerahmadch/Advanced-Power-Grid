@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="Advanced" constructor="PowerGrid" version="0.1.7" display-name-key="PowerGrid" description-key="PowerGrid description" control-type="standard" >
+  <control namespace="Advanced" constructor="PowerGrid" version="0.1.8" display-name-key="PowerGrid" description-key="PowerGrid description" control-type="standard" >
     <!--external-service-usage node declares whether this 3rd party PCF control is using external service or not, if yes, this control will be considered as premium and please also add the external domain it is using.
     If it is not using any external service, please set the enabled="false" and DO NOT add any domain below. The "enabled" will be false by default.
     Example1:
@@ -20,6 +20,7 @@
     <!-- property node identifies a specific, configurable piece of data that the control expects from CDS -->
     <property name="Items" display-name-key="Items" description-key="Items" of-type="SingleLine.Text" usage="bound" required="true" />
     <property name="SearchText" display-name-key="Search Text" description-key="Search Text" of-type="SingleLine.Text" usage="bound" required="true" />
+    <property name="HideColumns" display-name-key="Hide Columns" description-key="Hide Columns" of-type="SingleLine.Text" usage="bound" required="true" />
     <property name="SelectedItems" display-name-key="Selected Items" description-key="Selected Items" of-type="SingleLine.Text" usage="output" required="true" />
     <property name="SelectedItemJSON" display-name-key="SelectedItemJSON" description-key="Selected Item JSON" of-type="SingleLine.Text" usage="output" required="true" />
     <property name="SelectedItemsCount" display-name-key="Selected Items Count" description-key="Selected Items Count" of-type="SingleLine.Text" usage="output" required="true" />
